@@ -21,7 +21,10 @@
           "type": "raft",
           "instances": 3
         }
-      ]
+      ],
+      "tools": {
+        "fabloRest": true
+      }
     },
     {
       "organization": {
