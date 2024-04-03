@@ -45,6 +45,18 @@ class KVContract extends Contract {
     }
     return { success: "OK" };
   }
+  async recordAction(ctx, deviceId, actionType) {
+    const timestamp = new Date();
+
+    // const action = {
+    //   deviceId: deviceId,
+    //   actionType: actionType,
+    //   timestamp: timestamp.toISOString()
+    // };
+
+    await ctx.stub.putState(deviceId, Buffer.from(actionType));
+    return { success: "Action recorded successfully" };
+  }
 }
 
 exports.contracts = [KVContract];
