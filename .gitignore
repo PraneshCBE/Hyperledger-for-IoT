@@ -1,2 +1,4 @@
-node_modules
 /node_modules
+fablo-target
+chaincodes/chaincode-home/node_modules
+chaincodes/chaincode-kv-node/node_modules

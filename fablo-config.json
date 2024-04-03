@@ -6,7 +6,8 @@
     "engine": "docker",
     "peerDevMode": false,
     "tools": {
-      "explorer": true
+      "explorer": true,
+      "caliper": true
     }
   },
   "orgs": [
@@ -34,6 +35,9 @@
       "peer": {
         "instances": 2,
         "db": "LevelDb"
+      },
+      "tools": {
+        "fabloRest": true
       }
      
     },
@@ -45,6 +49,9 @@
       "peer": {
         "instances": 2,
         "db": "LevelDb"
+      },
+      "tools": {
+        "fabloRest": true
       }
      
     },
@@ -56,6 +63,9 @@
       "peer": {
         "instances": 2,
         "db": "LevelDb"
+      },
+      "tools": {
+        "fabloRest": true
       }
       
     }
@@ -129,8 +139,8 @@
       "name": "chaincode2",
       "version": "0.0.1",
       "lang": "node",
-      "channel": "channel2",
-      "directory": "./chaincodes/chaincode-kv-node"
+      "channel": "channel1",
+      "directory": "./chaincodes/chaincode-home"
     }
   ]
 }
