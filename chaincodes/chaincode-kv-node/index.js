@@ -7,7 +7,6 @@ class KVContract extends Contract {
     super("KVContract");
   }
   
-
   async deviceExists(ctx, ip) {
     const buffer = await ctx.stub.getState(ip);
     return !!buffer && buffer.length > 0;
@@ -56,8 +55,6 @@ class KVContract extends Contract {
     return false
   }
 
-
-
   async performAction(ctx, ip, status, value, invoker){
     const exists = await this.deviceExists(ctx, ip);
     if (!exists) {
@@ -104,6 +101,10 @@ class KVContract extends Contract {
   }
 
   async deleteDevice(ctx, ip){
+    const creator = await this.getCreator(ctx);
+    if (creator !== "admin"){
+      throw new Error(`Only Admin can perform this action!`);
+    }
     const exists = await this.deviceExists(ctx, ip);
     if (!exists) {
       throw new Error(`The device does not exist`);
