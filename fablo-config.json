@@ -6,19 +6,18 @@
     "engine": "docker",
     "peerDevMode": false,
     "tools": {
-      "explorer": true,
-      "caliper": true
+      "explorer": true
     }
   },
   "orgs": [
     {
       "organization": {
         "name": "Orderer",
-        "domain": "orderer.example.com"
+        "domain": "orderer.amrita.edu"
       },
       "orderers": [
         {
-          "groupName": "group1",
+          "groupName": "orderers",
           "type": "raft",
           "instances": 3
         }
@@ -30,11 +29,11 @@
     {
       "organization": {
         "name": "HomeAppliance",
-        "domain": "homeappliance.example.com"
+        "domain": "homeappliance.amrita.edu"
       },
       "peer": {
         "instances": 2,
-        "db": "LevelDb"
+        "db": "CouchDb"
       },
       "tools": {
         "fabloRest": true
@@ -44,11 +43,11 @@
     {
       "organization": {
         "name": "Surveillance",
-        "domain": "surveillance.example.com"
+        "domain": "surveillance.amrita.edu"
       },
       "peer": {
         "instances": 2,
-        "db": "LevelDb"
+        "db": "CouchDb"
       },
       "tools": {
         "fabloRest": true
@@ -58,11 +57,11 @@
     {
       "organization": {
         "name": "Intelli",
-        "domain": "intelli.example.com"
+        "domain": "intelli.amrita.edu"
       },
       "peer": {
         "instances": 2,
-        "db": "LevelDb"
+        "db": "CouchDb"
       },
       "tools": {
         "fabloRest": true
@@ -91,10 +90,10 @@
       ]
     },
     {
-      "name": "channel4",
+      "name": "channel2",
       "orgs": [
         {
-          "name": "Surveillance",
+          "name": "HomeAppliance",
           "peers": [
             "peer0",
             "peer1"
@@ -115,10 +114,10 @@
       ]
     },
     {
-      "name": "channel2",
+      "name": "channel4",
       "orgs": [
         {
-          "name": "HomeAppliance",
+          "name": "Surveillance",
           "peers": [
             "peer0",
             "peer1"
@@ -134,13 +133,6 @@
       "lang": "node",
       "channel": "channel1",
       "directory": "./chaincodes/chaincode-kv-node"
-    },
-    {
-      "name": "chaincode2",
-      "version": "0.0.1",
-      "lang": "node",
-      "channel": "channel1",
-      "directory": "./chaincodes/chaincode-home"
     }
   ]
 }

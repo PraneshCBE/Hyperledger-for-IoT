@@ -1,0 +1,40 @@
+Keys:
+======
+* deviceId
+
+Asset   - Device
+======
+{
+	id
+	name
+	orgName
+	status
+	value
+	lastInvoker
+	actionType (toggle or input)
+}
+
+Methods
+========
+
+init() -- to have initilaize the global incrementor for Device Id.
+
+addDevice(ctx, id, name, value, actionType)
+
+performAction(id, status, value, lastInvoker)
+
+deleteDevice(ctx, id)
+
+getAllDevices(ctx)
+
+getDeviceById(ctx, id)
+
+getDeviceHistoryById(ctx, id)
+
+
+
+
+
+
+
+

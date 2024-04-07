@@ -1,0 +1,23 @@
+actionId
+{
+	[id, deviceId]
+}
+
+
+<async> getStateByPartialCompositeKey(objectType, attributes) <async> getStateByPartialCompositeKeyWithPagination(objectType, attributes, pageSize, bookmark)
+
+createCompositeKey(objectType, attributes)
+	- createCompositeKey("actionId", ["uid", "deviceId"])
+
+getCreator()
+
+<async> getHistoryForKey(key)
+ 	- core.ledger.history.enableHistoryDatabas: true
+
+<async> getStateByRange(startKey, endKey)		<async> getStateByRangeWithPagination(startKey, endKey, pageSize, bookmark)
+
+<async> getStateValidationParameter(key)	
+
+getTxID()
+
+getMspID()

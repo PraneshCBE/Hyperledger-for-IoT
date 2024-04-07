@@ -48,14 +48,44 @@ class KVContract extends Contract {
   async recordAction(ctx, deviceId, actionType) {
     const timestamp = new Date();
 
-    // const action = {
-    //   deviceId: deviceId,
-    //   actionType: actionType,
-    //   timestamp: timestamp.toISOString()
-    // };
+    const action = {
+      deviceId: deviceId,
+      actionType: actionType,
+      timestamp: timestamp.toLocaleString(undefined,{timeZone:'Asia/Kolkata'})
+    };
 
-    await ctx.stub.putState(deviceId, Buffer.from(actionType));
+    await ctx.stub.putState(deviceId, Buffer.from(JSON.stringify(action)));
     return { success: "Action recorded successfully" };
+  }
+
+  async addDevice(ctx, deviceId, deviceName) 
+  {
+    await ctx.stub.putState(deviceId, Buffer.from(deviceName));
+    return { success: "Device added successfully" };
+  }
+
+  async getDevice(ctx, deviceId) {
+    const buffer = await ctx.stub.getState(deviceId);
+    if (!buffer || !buffer.length) return { error: "Device not found" };
+    return { success: buffer.toString() };
+  }
+
+  async getAllDevices(ctx) {
+    const startKey = "";
+    const endKey = "";
+    const allResults = [];
+    for await (const { key, value } of ctx.stub.getStateByRange(startKey, endKey)) {
+      const strValue = Buffer.from(value).toString("utf8");
+      let record;
+      try {
+        record = JSON.parse(strValue);
+      } catch (err) {
+        console.log(err);
+        record = strValue;
+      }
+      allResults.push({ Key: key, Record: record });
+    }
+    return { success: allResults };
   }
 }
 
