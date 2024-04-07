@@ -126,8 +126,8 @@
             <ul>
                 <h3>&nbspBasic information</h3>
                 <li>DLT: &nbsp<span style="font-weight: 500;">fabric</span></li>
-                <li>Name: &nbsp<span style="font-weight: 500;"></span></li>
-                <li>Description: &nbsp<span style="font-weight: 500;"></span></li>
+                <li>Name: &nbsp<span style="font-weight: 500;">basic-contract-benchmark</span></li>
+                <li>Description: &nbsp<span style="font-weight: 500;">A test benchmark</span></li>
                 <li>Benchmark Rounds: &nbsp<span style="font-weight: 500;">1</span></li>
                 <li><a href="#benchmarkInfo">Details</a></li>
             </ul>
@@ -152,17 +152,18 @@
                     </tr>
 
                     <tr>
-                         <td>createAsset</td> <td>0</td> <td>10</td> <td>29.0</td> <td>-</td> <td>-</td> <td>-</td> <td>28.3</td>
+                         <td>createAsset</td> <td>0</td> <td>10</td> <td>135.1</td> <td>-</td> <td>-</td> <td>-</td> <td>122.0</td>
                     </tr>
                 </table>
             </div>
             <div style="border-bottom: 1px solid #d9d9d9; padding-bottom: 10px;" id="createAsset">
                 <h2>Benchmark round: createAsset</h2>
-                <p></p>
+                <p>Create asset benchmark</p>
                 <pre style="overflow: visible;white-space: pre-wrap;max-height:100%;">rateControl:
-  type: fixed-rate
+  type: linear-rate
   opts:
-    tps: 25
+    startingTps: 50
+    finishingTps: 200
 </pre>
                         <h3>Performance metrics for createAsset</h3>
                             <table style="min-width: 100%;">
@@ -170,7 +171,7 @@
                                      <th>Name</th> <th>Succ</th> <th>Fail</th> <th>Send Rate (TPS)</th> <th>Max Latency (s)</th> <th>Min Latency (s)</th> <th>Avg Latency (s)</th> <th>Throughput (TPS)</th>
                                 </tr>
                                 <tr>
-                                     <td>createAsset</td> <td>0</td> <td>10</td> <td>29.0</td> <td>-</td> <td>-</td> <td>-</td> <td>28.3</td>
+                                     <td>createAsset</td> <td>0</td> <td>10</td> <td>135.1</td> <td>-</td> <td>-</td> <td>-</td> <td>122.0</td>
                                 </tr>
                             </table>
                         <h3>Resource utilization for createAsset</h3>
@@ -179,18 +180,24 @@
             <div style="border-bottom: 1px solid #d9d9d9; padding-bottom: 10px;">
                 <h2>Test Environment</h2>
                 <h3>benchmark config</h3>
-                <pre id="benchmarkInfo" style="overflow: visible;white-space: pre-wrap;max-height:100%;">workers: &#39;number:5&#39;
+                <pre id="benchmarkInfo" style="overflow: visible;white-space: pre-wrap;max-height:100%;">name: basic-contract-benchmark
+description: A test benchmark
+workers:
+  type: local
+  number: 5
 rounds:
   - label: createAsset
+    description: Create asset benchmark
     txNumber: 10
     rateControl:
-      type: fixed-rate
+      type: linear-rate
       opts:
-        tps: 25
+        startingTps: 50
+        finishingTps: 200
     workload:
       module: workload&#x2F;createAsset.js
       arguments:
-        contractId: KVContract
+        contractId: basic
 </pre>
                 <h3>SUT</h3>
                 <pre id="sutdetails">not provided</pre>

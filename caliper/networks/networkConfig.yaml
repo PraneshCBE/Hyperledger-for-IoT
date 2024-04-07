@@ -8,8 +8,9 @@ caliper:
 channels:
   - channelName: channel1
     contracts:
-      - id: chaicode1
+      - id: chaincode1
         contractID: KVContract
+        name: chaincode1
         intsall:
           version: v0
           path: ../../chaincodes/chaincode-kv-node
@@ -19,6 +20,14 @@ channels:
 
 organizations:
     - mspid: HomeApplianceMSP
+      peers:
+        - peer0.homeappliance.amrita.edu
+      certificateAuthorities:
+      - ca.homeappliance.amrita.edu
+      adminPrivateKey:
+        path: "../fablo-target/fabric-config/crypto-config/peerOrganizations/homeappliance.amrita.edu/users/Admin@homeappliance.amrita.edu/msp/keystore/priv-key.pem"
+      signedCert:
+        path: "../fablo-target/fabric-config/crypto-config/peerOrganizations/homeappliance.amrita.edu/users/Admin@homeappliance.amrita.edu/msp/signcerts/Admin@homeappliance.amrita.edu-cert.pem"
       identities:
         certificates:
           - name: "Admin"

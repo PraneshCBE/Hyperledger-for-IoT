@@ -1,14 +1,37 @@
 test:
+  name: basic-contract-benchmark
+  description: A test benchmark
   workers:
-    number:5
+    type: local
+    number: 5
   rounds:
     - label: createAsset
+      description: Create asset benchmark
       txNumber: 10
-      rateControl: 
-        type: fixed-rate
-        opts:
-          tps: 25
+      rateControl:
+        { type: "linear-rate", opts: { startingTps: 50, finishingTps: 200 } }
       workload:
         module: workload/createAsset.js
         arguments:
-          contractId: KVContract
+          contractId: basic
+    # - label: readAsset
+    #   description: Read asset benchmark
+    #   txDuration: 60
+    #   rateControl: { type: "fixed-load", opts: { transactionLoad: 5 } }
+    #   workload:
+    #     module: workload/readAsset.js
+    #     arguments:
+    #       assets: 10
+    #       contractId: basic
+
+monitors:
+  resource:
+    - module: docker
+      options:
+        interval: 4
+        containers:
+          [
+            "peer0.homeappliance.amrita.edu",
+            "peer0.intelli.amrita.edu",
+            "orderer0.orderers.orderer.amrita.edu",
+          ]
