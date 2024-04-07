@@ -1,0 +1,31 @@
+name: Caliper test
+version: "2.0.0"
+caliper:
+  blockchain: fabric
+  sutOptions:
+    mutualTls: false
+
+channels:
+  - channelName: channel1
+    contracts:
+      - id: chaicode1
+        contractID: KVContract
+        intsall:
+          version: v0
+          path: ../../chaincodes/chaincode-kv-node
+          language: node
+
+
+
+organizations:
+    - mspid: HomeApplianceMSP
+      identities:
+        certificates:
+          - name: "Admin"
+            clientPrivateKey: 
+              path: "../fablo-target/fabric-config/crypto-config/peerOrganizations/homeappliance.amrita.edu/users/Admin@homeappliance.amrita.edu/tls/client.key"
+            clientSignedCert:
+              path: "../fablo-target/fabric-config/crypto-config/peerOrganizations/homeappliance.amrita.edu/users/Admin@homeappliance.amrita.edu/tls/client.crt"
+      connectionProfile:
+        path: "../fablo-target/fabric-config/connection-profiles/connection-profile-homeappliance.yaml"
+        discover: true

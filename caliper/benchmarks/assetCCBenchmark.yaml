@@ -1,0 +1,14 @@
+test:
+  workers:
+    number:5
+  rounds:
+    - label: createAsset
+      txNumber: 10
+      rateControl: 
+        type: fixed-rate
+        opts:
+          tps: 25
+      workload:
+        module: workload/createAsset.js
+        arguments:
+          contractId: KVContract
