@@ -12,7 +12,7 @@ createCompositeKey(objectType, attributes)
 getCreator()
 
 <async> getHistoryForKey(key)
- 	- core.ledger.history.enableHistoryDatabas: true
+ 	- core.ledger.history.enableHistoryDatabase: true
 
 <async> getStateByRange(startKey, endKey)		<async> getStateByRangeWithPagination(startKey, endKey, pageSize, bookmark)
 

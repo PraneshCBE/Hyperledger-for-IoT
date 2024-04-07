@@ -7,6 +7,10 @@
     "peerDevMode": false,
     "tools": {
       "explorer": true
+    },
+    "history": {
+      "enabled": true,
+      "database":"couchdb"
     }
   },
   "orgs": [
@@ -91,30 +95,6 @@
     },
     {
       "name": "channel2",
-      "orgs": [
-        {
-          "name": "HomeAppliance",
-          "peers": [
-            "peer0",
-            "peer1"
-          ]
-        }
-      ]
-    },
-    {
-      "name": "channel3",
-      "orgs": [
-        {
-          "name": "Intelli",
-          "peers": [
-            "peer0",
-            "peer1"
-          ]
-        }
-      ]
-    },
-    {
-      "name": "channel4",
       "orgs": [
         {
           "name": "Surveillance",

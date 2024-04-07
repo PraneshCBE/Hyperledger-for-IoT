@@ -1,80 +1,122 @@
 const { Contract } = require("fabric-contract-api");
 const crypto = require("crypto");
-
+const { get } = require("http");
+var limitPerDay = 5;
 class KVContract extends Contract {
   constructor() {
     super("KVContract");
   }
+  
 
-  async instantiate() {
-    // function that will be invoked on chaincode instantiation
+  async deviceExists(ctx, ip) {
+    const buffer = await ctx.stub.getState(ip);
+    return !!buffer && buffer.length > 0;
   }
 
-  async put(ctx, key, value) {
-    await ctx.stub.putState(key, Buffer.from(value));
-    return { success: "OK" };
-  }
+  async addDevice(ctx, ip, name, actionType){
 
-  async get(ctx, key) {
-    const buffer = await ctx.stub.getState(key);
-    if (!buffer || !buffer.length) return { error: "NOT_FOUND" };
-    return { success: buffer.toString() };
-  }
-
-  async putPrivateMessage(ctx, collection) {
-    const transient = ctx.stub.getTransient();
-    const message = transient.get("message");
-    await ctx.stub.putPrivateData(collection, "message", message);
-    return { success: "OK" };
-  }
-
-  async getPrivateMessage(ctx, collection) {
-    const message = await ctx.stub.getPrivateData(collection, "message");
-    const messageString = message.toBuffer ? message.toBuffer().toString() : message.toString();
-    return { success: messageString };
-  }
-
-  async verifyPrivateMessage(ctx, collection) {
-    const transient = ctx.stub.getTransient();
-    const message = transient.get("message");
-    const messageString = message.toBuffer ? message.toBuffer().toString() : message.toString();
-    const currentHash = crypto.createHash("sha256").update(messageString).digest("hex");
-    const privateDataHash = (await ctx.stub.getPrivateDataHash(collection, "message")).toString("hex");
-    if (privateDataHash !== currentHash) {
-      return { error: "VERIFICATION_FAILED" };
+    const exists = await this.deviceExists(ctx, ip);
+    if (exists) {
+      throw new Error(`The device already exists`);
     }
-    return { success: "OK" };
-  }
-  async recordAction(ctx, deviceId, actionType) {
+
+    const OrgName = ctx.clientIdentity.getMSPID();
     const timestamp = new Date();
-
-    const action = {
-      deviceId: deviceId,
-      actionType: actionType,
-      timestamp: timestamp.toLocaleString(undefined,{timeZone:'Asia/Kolkata'})
-    };
-
-    await ctx.stub.putState(deviceId, Buffer.from(JSON.stringify(action)));
-    return { success: "Action recorded successfully" };
+    const asset = {
+      ip:ip,
+      name: name,
+      orgName: OrgName,
+      status:"OFF",
+      value: 0,
+      lastInvoker: "INIT",
+      lastInvokedTime: timestamp.toLocaleString(undefined,{timeZone:'Asia/Kolkata'}),
+      actionType: actionType
+    }
+    const buffer = Buffer.from(JSON.stringify(asset));
+    await ctx.stub.putState(ip, buffer);
+    return "Device added successfully";
   }
 
-  async addDevice(ctx, deviceId, deviceName) 
-  {
-    await ctx.stub.putState(deviceId, Buffer.from(deviceName));
-    return { success: "Device added successfully" };
+  async checkDeviceInvokesLimitPerDay(ctx, ip){
+    const deviceHistory = await this.getDeviceHistoryByIp(ctx, ip);
+    const deviceHistoryJson = JSON.parse(deviceHistory);
+    const today = new Date();
+    const todayDate = today.getDate();
+    let count = 0;
+    for(let i=0; i<deviceHistoryJson.length; i++){
+      const history = deviceHistoryJson[i].Record;
+      const historyDate = new Date(history.lastInvokedTime).getDate();
+      if(todayDate === historyDate){
+        count++;
+      }
+    }
+    if (count>=limitPerDay){
+      return true
+    }
+    return false
   }
 
-  async getDevice(ctx, deviceId) {
-    const buffer = await ctx.stub.getState(deviceId);
-    if (!buffer || !buffer.length) return { error: "Device not found" };
-    return { success: buffer.toString() };
+
+
+  async performAction(ctx, ip, status, value, invoker){
+    const exists = await this.deviceExists(ctx, ip);
+    if (!exists) {
+      throw new Error(`The device does not exist`);
+    }
+    const isLimitExceeded = await this.checkDeviceInvokesLimitPerDay(ctx, ip);
+    if (isLimitExceeded){
+      throw new Error(`The device invokes limit exceeded for today! Ask Admin to perform action!`);
+    }
+    const assetString = await ctx.stub.getState(ip);
+    const asset = JSON.parse(assetString.toString());
+    asset.status = status;
+    asset.value = value;
+    asset.lastInvoker = invoker;
+    const buffer = Buffer.from(JSON.stringify(asset));
+    await ctx.stub.putState(ip, buffer);
+    return "Action performed successfully";
   }
 
-  async getAllDevices(ctx) {
+  async getCreator(ctx){
+    const client = ctx.clientIdentity.getID();
+    let CN = client.split("CN=");
+    CN = CN[1].split("::");
+    return CN[0];
+  }
+
+  async performActionByAdmin(ctx, ip, status, value, invoker){
+    const exists = await this.deviceExists(ctx, ip);
+    if (!exists) {
+      throw new Error(`The device does not exist`);
+    }
+    const creator = await this.getCreator(ctx);
+    if (invoker !== "admin" || creator !== "admin"){
+      throw new Error(`Only Admin can perform this action!`);
+    }
+    const assetString = await ctx.stub.getState(ip);
+    const asset = JSON.parse(assetString.toString());
+    asset.status = status;
+    asset.value = value;
+    asset.lastInvoker = invoker;
+    const buffer = Buffer.from(JSON.stringify(asset));
+    await ctx.stub.putState(ip, buffer);
+    return "Action performed successfully";
+  }
+
+  async deleteDevice(ctx, ip){
+    const exists = await this.deviceExists(ctx, ip);
+    if (!exists) {
+      throw new Error(`The device does not exist`);
+    }
+    await ctx.stub.deleteState(ip);
+    return "Device deleted successfully";
+  }
+
+  async getAllDevices(ctx){
     const startKey = "";
     const endKey = "";
     const allResults = [];
-    for await (const { key, value } of ctx.stub.getStateByRange(startKey, endKey)) {
+    for await (const {key, value} of ctx.stub.getStateByRange(startKey, endKey)) {
       const strValue = Buffer.from(value).toString("utf8");
       let record;
       try {
@@ -85,8 +127,84 @@ class KVContract extends Contract {
       }
       allResults.push({ Key: key, Record: record });
     }
-    return { success: allResults };
+    return JSON.stringify(allResults);
   }
-}
 
+  async getDeviceByIp(ctx, ip){
+    const exists = await this.deviceExists(ctx, ip);
+    if (!exists) {
+      throw new Error(`The device does not exist`);
+    }
+    const assetString = await ctx.stub.getState(ip);
+    const asset = JSON.parse(assetString.toString());
+    return JSON.stringify(asset);
+  }
+
+  async getDeviceHistoryByIp(ctx, ip){
+    const exists = await this.deviceExists(ctx, ip);
+    if (!exists) {
+      throw new Error(`The device does not exist`);
+    }
+    const resultsIterator = await ctx.stub.getHistoryForKey(ip);
+    const allResults = [];
+    while (true) {
+      const res = await resultsIterator.next();
+      if (res.value && res.value.value.toString()) {
+        let jsonRes;
+        try {
+          jsonRes = JSON.parse(res.value.value.toString("utf8"));
+        } catch (err) {
+          console.log(err);
+          jsonRes = res.value.value.toString("utf8");
+        }
+        allResults.push({ TxId: res.value.tx_id, Record: jsonRes });
+      }
+      if (res.done) {
+        await resultsIterator.close();
+        return JSON.stringify(allResults);
+      }
+    }
+    
+  }
+  
+  async getDeviceStatus(ctx, ip){
+    const exists = await this.deviceExists(ctx, ip);
+    if (!exists) {
+      throw new Error(`The device does not exist`);
+    }
+    const assetString = await ctx.stub.getState(ip);
+    const asset = JSON.parse(assetString.toString());
+    return asset.status;
+  }
+
+  async getDevicesByStatus(ctx, status){
+    const startKey = "";
+    const endKey = "";
+    const allResults = [];
+    for await (const {key, value} of ctx.stub.getStateByRange(startKey, endKey)) {
+      const strValue = Buffer.from(value).toString("utf8");
+      let record;
+      try {
+        record = JSON.parse(strValue);
+      } catch (err) {
+        console.log(err);
+        record = strValue;
+      }
+      if(record.status === status){
+        allResults.push({ Key: key, Record: record });
+      }
+    }
+    return JSON.stringify(allResults);
+  }
+
+  async changeLimitsPerDay(ctx, limit){
+    const creator = await this.getCreator(ctx);
+    if (creator !== "admin"){
+      throw new Error(`Only Admin can perform this action!`);
+    }
+    limitPerDay = limit;
+    return "Limit changed successfully";
+  }
+  
+}
 exports.contracts = [KVContract];
