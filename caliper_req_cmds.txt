@@ -1,0 +1,12 @@
+D:\FYP\fablo-target\fabric-config\crypto-config\peerOrganizations\homeappliance.amrita.edu\users\User1@homeappliance.amrita.edu\tls\client.key
+
+D:\FYP\fablo-target\fabric-config\crypto-config\peerOrganizations\homeappliance.amrita.edu\users\User1@homeappliance.amrita.edu\tls\client.crt
+
+D:\FYP\fablo-target\fabric-config\connection-profiles\connection-profile-homeappliance.yaml
+
+
+Caliper
+=======
+npm install --only=prod @hyperledger/caliper-cli@0.5.0
+
+npx caliper launch manager --caliper-fabric-gateway-enable
