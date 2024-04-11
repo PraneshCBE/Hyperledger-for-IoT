@@ -113,6 +113,13 @@
       "lang": "node",
       "channel": "channel1",
       "directory": "./chaincodes/chaincode-kv-node"
+    },
+    {
+      "name": "chaincode2",
+      "version": "0.0.1",
+      "lang": "node",
+      "channel": "channel2",
+      "directory": "./chaincodes/chaincode-kv-node"
     }
   ]
 }
