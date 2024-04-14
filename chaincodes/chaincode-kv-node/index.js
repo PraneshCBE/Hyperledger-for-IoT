@@ -66,9 +66,11 @@ class KVContract extends Contract {
     }
     const assetString = await ctx.stub.getState(ip);
     const asset = JSON.parse(assetString.toString());
+    const timestamp = new Date();
     asset.status = status;
     asset.value = value;
     asset.lastInvoker = invoker;
+    asset.lastInvokedTime = timestamp.toLocaleString(undefined,{timeZone:'Asia/Kolkata'});
     const buffer = Buffer.from(JSON.stringify(asset));
     await ctx.stub.putState(ip, buffer);
     return "Action performed successfully";
