@@ -97,6 +97,7 @@ class KVContract extends Contract {
     asset.status = status;
     asset.value = value;
     asset.lastInvoker = invoker;
+    asset.lastInvokedTime = new Date().toLocaleString(undefined,{timeZone:'Asia/Kolkata'});
     const buffer = Buffer.from(JSON.stringify(asset));
     await ctx.stub.putState(ip, buffer);
     return "Action performed successfully";
