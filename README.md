@@ -37,6 +37,7 @@ Pranesh R - pranesh.r702@gmail.com
 ```http
 GET /api/endpoint1?param1=value1&param2=value2 HTTP/1.1
 Host: example.com
+```
 
 
 Lalith Guptha B - lalithg95@gmail.com
