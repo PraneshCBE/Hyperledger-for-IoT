@@ -11,34 +11,86 @@ establishing a secure and transparent environment for IoT devices.
 By leveraging the inherent features of Hyperledger Fabric, such as
 it’s consensus mechanism, smart contracts, and permissioned network
 structure, this research aims to mitigate common security concerns
-associated with Smart Home IoT devices, including unauthorized ac-
-cess, data tampering, and device compromise
+associated with Smart Home IoT devices, including unauthorized access, data tampering, and device compromise
 
-## Contact
-Pranesh R - pranesh.r702@gmail.com
 
+## Methodology
+
+
+## Installation & Deployment
+
+**Requirements:**
+
+- `docker-compose` 
+- ``nodejs`` *(Recommended Version : 12 or Higher)*
+
+**Steps:**
+```bash
+  git clone https://github.com/PraneshCBE/Hyperledger-for-IoT.git
+  cd Hyperledger-for-IoT
+  chmod +x fablo
+  ./fablo up fablo-config.json
+```
 
 ## REST APIs Using Fablo Rest
 
-### API Endpoint 1
+**Organisations & Ports**
+```
+Orderers : 8800
+HomeApplicance : 8801
+Survillence : 8802
+Intelli : 8803
+```
+### http://localhost:{org-port}/user/enroll
 
-**Description**: Brief description of what this API endpoint does
+**Description**: Enrolls the existing user for Session Token
 
-**Method**: GET
+**Method**: POST
 
-**Endpoint**: `/api/endpoint1`
-
-**Request Parameters**:
-- `param1`: Description of parameter 1
-- `param2`: Description of parameter 2
-- ...
-
-**Sample Request**:
+**Body**
 ```http
-GET /api/endpoint1?param1=value1&param2=value2 HTTP/1.1
-Host: example.com
+{
+    "id":"admin",
+    "secret":"adminpw"
+}
 ```
 
+**Sample Successful Response**:
+```http
+{
+    "token": "32c4c690-fc1a-11ee-a359-e30085dbc7ec-admin"
+}
+```
+
+### http://localhost:{org-port}/user/register
+
+**Description**: Register new user (Only Admin can do this)
+
+**Method**: POST
+
+
+| Header | Type     | Description                |
+| :-------- | :------- | :------------------------- |
+| `Auth` | `Bearer Token` | **Required** Admin token received on Enroll |
+
+
+**Body**
+```http
+{
+    "id":"lalith",
+    "secret":"lalith123"
+}
+```
+
+**Sample Successful Response**:
+```http
+{
+    "message": "ok"
+}
+```
+
+## Contact
+Pranesh R - pranesh.r702@gmail.com
 
 Lalith Guptha B - lalithg95@gmail.com
 ## Contributing
