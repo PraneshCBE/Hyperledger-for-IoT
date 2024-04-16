@@ -17,6 +17,28 @@ cess, data tampering, and device compromise
 ## Contact
 Pranesh R - pranesh.r702@gmail.com
 
+
+## REST APIs Using Fablo Rest
+
+### API Endpoint 1
+
+**Description**: Brief description of what this API endpoint does
+
+**Method**: GET
+
+**Endpoint**: `/api/endpoint1`
+
+**Request Parameters**:
+- `param1`: Description of parameter 1
+- `param2`: Description of parameter 2
+- ...
+
+**Sample Request**:
+```http
+GET /api/endpoint1?param1=value1&param2=value2 HTTP/1.1
+Host: example.com
+
+
 Lalith Guptha B - lalithg95@gmail.com
 ## Contributing
 
