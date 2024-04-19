@@ -3,3 +3,4 @@ fablo-target
 chaincodes/chaincode-home/node_modules
 chaincodes/chaincode-kv-node/node_modules
 caliper/node_modules
+caliper/report.html
