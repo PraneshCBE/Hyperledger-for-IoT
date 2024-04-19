@@ -100,7 +100,7 @@ From now on for every endpoints this Token (will expire in 15 mins) is required 
 **Method**: GET
 
 ### Invoke Endpoints
-/invoke/<channel-name>/<chaincode-name>
+/invoke/:channel-name/:chaincode-name
 
 **Method**: POST
 
@@ -161,7 +161,7 @@ From now on for every endpoints this Token (will expire in 15 mins) is required 
 
 **Delete a Device** 
 
-*Description* :Delete a existing Device (only by admin).
+*Description* : Delete an existing Device (only by admin).
 
 *Sample Body*
 ```http
@@ -174,7 +174,7 @@ From now on for every endpoints this Token (will expire in 15 mins) is required 
 ```
 
 ### Query Endpoints
-/query/<channel-name>/<chaincode-name>
+/query/:channel-name/:chaincode-name
 
 **Method**: POST
 
