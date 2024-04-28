@@ -1,10 +1,14 @@
 const { Contract } = require("fabric-contract-api");
-const crypto = require("crypto");
-const { get } = require("http");
-var limitPerDay = 5;
+const nodemailer = require("nodemailer");
+var limitPerDay ;
+var alert_mail;
+var alert_timings;
 class KVContract extends Contract {
   constructor() {
     super("KVContract");
+    limitPerDay = 5;
+    alert_mail = "lalithg96@gmail.com";
+    alert_timings = [0, 4];
   }
   
   async deviceExists(ctx, ip) {
@@ -33,6 +37,8 @@ class KVContract extends Contract {
     }
     const buffer = Buffer.from(JSON.stringify(asset));
     await ctx.stub.putState(ip, buffer);
+    this.sendEmailAlert(ctx, alert_mail, "New Device Added", `🏠 Device with IP: ${ip} is added to ${OrgName} 👨‍💻\n⚙️ at ${timestamp.toLocaleString(undefined,{timeZone:'Asia/Kolkata'})} \n\nName: ${name} \nAction Type: ${actionType} \n `);
+
     return "Device added successfully";
   }
 
@@ -73,7 +79,13 @@ class KVContract extends Contract {
     asset.lastInvokedTime = timestamp.toLocaleString(undefined,{timeZone:'Asia/Kolkata'});
     const buffer = Buffer.from(JSON.stringify(asset));
     await ctx.stub.putState(ip, buffer);
+
+    if (alert_timings[0]<=timestamp.getHours() && timestamp.getHours()<=alert_timings[1]){
+      this.sendEmailAlert(ctx, alert_mail, "Device Alert", `🏠 Device with IP: ${ip} is invoked by ${invoker} 👨‍💻\n ⚙️ at ${timestamp.toLocaleString(undefined,{timeZone:'Asia/Kolkata'})}`);
+    }
     return "Action performed successfully";
+
+
   }
 
   async getCreator(ctx){
@@ -113,6 +125,8 @@ class KVContract extends Contract {
       throw new Error(`The device does not exist`);
     }
     await ctx.stub.deleteState(ip);
+    this.sendEmailAlert(ctx, alert_mail, "Device Deleted", `🏠 Device with IP: ${ip} is deleted by ${creator} 👨‍💻\n⚙️ at ${new Date().toLocaleString(undefined,{timeZone:'Asia/Kolkata'})}`);
+
     return "Device deleted successfully";
   }
 
@@ -207,8 +221,66 @@ class KVContract extends Contract {
       throw new Error(`Only Admin can perform this action!`);
     }
     limitPerDay = limit;
+    this.sendEmailAlert(ctx, alert_mail, "Limit Changed", `🏠 Limit per day is changed to ${limit} by ${creator} 👨‍💻\n⚙️ at ${new Date().toLocaleString(undefined,{timeZone:'Asia/Kolkata'})}`);
     return "Limit changed successfully";
   }
   
+  async sendEmailAlert(ctx, email, subject, message){
+    const transporter = nodemailer.createTransport({
+      service: "Gmail",
+      host: "smtp.gmail.com",
+      port: 465,
+      secure: true,
+      auth: {
+        user: "rvpspran@gmail.com",
+        pass: "jydk tgaz wepv mstb",
+      },
+    });
+    const mailOptions = {
+      from: "rvpspran@gmail.com",
+      to: email,
+      subject: subject,
+      text: message,
+    };
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        return "Error";
+      } else {
+        return "Email sent successfully";
+      }
+    });
+  }
+
+  async changeAlertTimings(ctx, start, end){
+    const creator = await this.getCreator(ctx);
+    if (creator !== "admin"){
+      throw new Error(`Only Admin can perform this action!`);
+    }
+    alert_timings[0] = parseInt(start); 
+    alert_timings[1] = parseInt(end);
+    this.sendEmailAlert(ctx, alert_mail, "Alert Timings Changed", `🏠 Alert Timings are changed to ${start} to ${end} by ${creator} 👨‍💻\n⚙️ at ${new Date().toLocaleString(undefined,{timeZone:'Asia/Kolkata'})}`);
+    return "Alert Timings changed successfully";
+  }
+
+  async getAlertTimings(ctx){
+    return JSON.stringify(alert_timings);
+  }
+  async getLimitPerDay(ctx){
+    return limitPerDay;
+  }
+  async getAlertMail(ctx){
+    return alert_mail;
+  }
+  async setAlertMail(ctx, email){
+    const creator = await this.getCreator(ctx);
+    if (creator !== "admin"){
+      throw new Error(`Only Admin can perform this action!`);
+    }
+    alert_mail = email;
+    this.sendEmailAlert(ctx, alert_mail, "Alert Mail Changed", `🏠 Alert Mail is changed to ${email} by ${creator} 👨‍💻\⚙️ at ${new Date().toLocaleString(undefined,{timeZone:'Asia/Kolkata'})}`);
+    return "Alert Mail changed successfully";
+  }
+
+
 }
 exports.contracts = [KVContract];
